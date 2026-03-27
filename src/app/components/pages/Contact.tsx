@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router";
-import { Phone, Send, Loader2, HeartHandshake } from "lucide-react";
+import { Phone, Send, Loader2 } from "lucide-react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -117,74 +117,10 @@ export function Contact() {
         </div>
       </section>
 
-      {/* Contact Info & Form */}
+      {/* Contact form */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Support resources (aligned with aspenhouseslc.org/contact/) */}
-            <div className="lg:col-span-1">
-              <Card className="border-2 border-primary/10 h-full">
-                <CardContent className="p-6">
-                  <div className="inline-flex p-3 bg-primary/10 rounded-lg mb-4">
-                    <HeartHandshake size={24} className="text-primary" aria-hidden />
-                  </div>
-                  <h2 className="text-lg font-semibold text-primary mb-3 leading-snug">
-                    We are not yet operational. If you are in need of support now, please explore these great
-                    resources:
-                  </h2>
-                  <ul className="space-y-3 text-sm text-foreground/90 list-none pl-0">
-                    <li>
-                      <span className="text-foreground/70">National Human Trafficking Hotline: </span>
-                      <a
-                        href="tel:18883737888"
-                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
-                      >
-                        1-888-3737-888
-                      </a>
-                    </li>
-                    <li>
-                      <span className="text-foreground/70">Text </span>
-                      <span className="font-medium">&quot;Help&quot;</span>
-                      <span className="text-foreground/70"> or </span>
-                      <span className="font-medium">&quot;Info&quot;</span>
-                      <span className="text-foreground/70"> to </span>
-                      <span className="font-medium">233733</span>
-                    </li>
-                    <li>
-                      <span className="text-foreground/70">Utah Human Trafficking Tip line: </span>
-                      <a
-                        href="tel:8012003443"
-                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
-                      >
-                        801-200-3443
-                      </a>
-                    </li>
-                    <li>
-                      <span className="text-foreground/70">Utah Domestic Violence 24-hr Hotline: </span>
-                      <a
-                        href="tel:18008975465"
-                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
-                      >
-                        1-800-897-5465
-                      </a>
-                    </li>
-                    <li>
-                      <span className="text-foreground/70">Utah Sexual Violence 24-hr Hotline: </span>
-                      <a
-                        href="tel:18884211100"
-                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
-                      >
-                        1-888-421-1100
-                      </a>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card className="border-2 border-primary/10">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <Card className="border-2 border-primary/10">
                 <CardContent className="p-8">
                   <h2 className="text-3xl font-bold text-primary mb-6">Get in touch</h2>
 
@@ -313,8 +249,6 @@ export function Contact() {
                   </form>
                 </CardContent>
               </Card>
-            </div>
-          </div>
         </div>
       </section>
 
