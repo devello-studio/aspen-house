@@ -1,6 +1,6 @@
+import React from "react";
 import { Link } from "react-router";
-import { Facebook, Instagram, Youtube, Leaf } from "lucide-react";
-import { Button } from "./ui/button";
+import { Leaf } from "lucide-react";
 
 export function Footer() {
   return (
@@ -22,46 +22,26 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* Right: Social & Donate */}
-          <div className="flex flex-col items-center md:items-end gap-4">
-            <div className="flex gap-3">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-secondary/20 rounded-full hover:bg-secondary hover:text-secondary-foreground transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-secondary/20 rounded-full hover:bg-secondary hover:text-secondary-foreground transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-secondary/20 rounded-full hover:bg-secondary hover:text-secondary-foreground transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube size={20} />
-              </a>
-            </div>
-            <Link to="/get-involved">
-              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                DONATE NOW
-              </Button>
-            </Link>
-          </div>
+          {/* Right: Empty Space for Balance */}
+          <div className="hidden md:block"></div>
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm text-primary-foreground/60">
+          <div className="flex flex-col items-center gap-2 mb-3">
+            <img src="/devello.svg" alt="Devello Studio logo" width={24} height={24} />
+            <p>
+              Powered by{" "}
+              <a
+                href="https://devello.studio"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-foreground/90 underline underline-offset-2 hover:text-primary-foreground"
+              >
+                Devello Studio
+              </a>
+              .
+            </p>
+          </div>
           <p>&copy; {new Date().getFullYear()} Aspen Magdalene House. All rights reserved.</p>
         </div>
       </div>
