@@ -102,7 +102,10 @@ export function Header() {
             >
               <button
                 className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-1 ${
-                  isActive("/get-involved") || isActive("/programs")
+                  isActive("/get-involved") ||
+                  isActive("/programs") ||
+                  isActive("/contact") ||
+                  isActive("/volunteer")
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -119,10 +122,16 @@ export function Header() {
                     Donate
                   </Link>
                   <Link
-                    to="/get-involved#volunteer"
+                    to="/volunteer"
                     className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     Volunteer
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    Contact Us
                   </Link>
                 </div>
               )}
@@ -240,6 +249,28 @@ export function Header() {
               }`}
             >
               Special Events
+            </Link>
+            <Link
+              to="/volunteer"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                isActive("/volunteer")
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              Volunteer
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                isActive("/contact")
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              Contact Us
             </Link>
             <Link
               to="/get-involved"

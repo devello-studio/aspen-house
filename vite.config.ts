@@ -1,5 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import path from 'path'
+
+const apiProxyTarget = process.env.API_PROXY_TARGET || 'http://127.0.0.1:3000'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
@@ -22,6 +24,22 @@ function figmaAssetFallback(): Plugin {
 }
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them

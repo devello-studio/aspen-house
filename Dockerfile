@@ -7,6 +7,8 @@ RUN npm ci
 
 FROM deps AS builder
 COPY . .
+ARG VITE_TURNSTILE_SITE_KEY
+ENV VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
 RUN npm run build
 
 FROM nginx:1.27-alpine AS production

@@ -19,7 +19,8 @@
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
   --border: rgba(44, 62, 44, 0.15);
-  --input: transparent;
+  /* Visible but subtle outline so fields read as inputs (was transparent). */
+  --input: rgba(44, 62, 44, 0.22);
   --input-background: #ffffff;
   --switch-background: #cbced4;
   --font-weight-medium: 500;

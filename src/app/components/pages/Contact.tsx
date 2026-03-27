@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router";
-import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import { Phone, Send, Loader2, HeartHandshake } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { TurnstileSetupAlert } from "../TurnstileSetupAlert";
+import { TURNSTILE_SITE_KEY } from "../../../constants/env";
 
 export function Contact() {
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,12 +19,80 @@ export function Contact() {
     subject: "",
     message: "",
   });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ variant: "success" | "destructive"; message: string } | null>(
+    null,
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setFeedback(null);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, this would send the form data to a server
-    alert("Thank you for your message! We will get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    setFeedback(null);
+
+    if (!TURNSTILE_SITE_KEY) {
+      setFeedback({
+        variant: "destructive",
+        message: "Contact form is not configured (missing VITE_TURNSTILE_SITE_KEY).",
+      });
+      return;
+    }
+
+    if (!turnstileToken) {
+      setFeedback({
+        variant: "destructive",
+        message: "Please complete the verification challenge before sending.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          turnstileToken,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string };
+
+      if (!res.ok) {
+        setFeedback({
+          variant: "destructive",
+          message: data.message ?? "Could not send your message. Please try again.",
+        });
+        turnstileRef.current?.reset();
+        setTurnstileToken(null);
+        return;
+      }
+
+      setFeedback({
+        variant: "success",
+        message: data.message ?? "Thank you for your message! We will get back to you soon.",
+      });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
+    } catch {
+      setFeedback({
+        variant: "destructive",
+        message: "Network error. Is the API running? Try: npm run dev:all",
+      });
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -35,9 +108,11 @@ export function Contact() {
       <section className="py-20 bg-gradient-to-b from-muted to-white">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold text-primary mb-6">Contact Us</h1>
-          <p className="text-xl text-foreground/80 max-w-3xl mx-auto">
-            We're here to answer your questions and provide support. Reach out to learn more about our
-            programs or how you can get involved.
+          <p className="text-xl text-foreground/80 max-w-3xl mx-auto leading-relaxed">
+            Our current priority is creating a strong foundation for our roots to take hold and flourish.
+            Please send us a message if you would like to be involved in supporting Aspen House in its
+            development, or sign up below if you&apos;d like to keep up with our progress once we open our
+            home.
           </p>
         </div>
       </section>
@@ -46,85 +121,63 @@ export function Contact() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Contact Information */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="border-2 border-primary/10">
+            {/* Support resources (aligned with aspenhouseslc.org/contact/) */}
+            <div className="lg:col-span-1">
+              <Card className="border-2 border-primary/10 h-full">
                 <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="inline-flex p-3 bg-primary/10 rounded-lg">
-                        <MapPin size={24} className="text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1 text-primary">Address</h3>
-                      <p className="text-sm text-foreground/80">
-                        123 Aspen Drive
-                        <br />
-                        Salt Lake City, UT 84101
-                      </p>
-                    </div>
+                  <div className="inline-flex p-3 bg-primary/10 rounded-lg mb-4">
+                    <HeartHandshake size={24} className="text-primary" aria-hidden />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-primary/10">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="inline-flex p-3 bg-primary/10 rounded-lg">
-                        <Phone size={24} className="text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1 text-primary">Phone</h3>
-                      <p className="text-sm text-foreground/80">
-                        Main: (801) 555-0100
-                        <br />
-                        Crisis Line: (801) 555-0200
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-primary/10">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="inline-flex p-3 bg-primary/10 rounded-lg">
-                        <Mail size={24} className="text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1 text-primary">Email</h3>
-                      <p className="text-sm text-foreground/80">
-                        General: info@aspenhouseslc.org
-                        <br />
-                        Admissions: admissions@aspenhouseslc.org
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-primary/10">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="inline-flex p-3 bg-primary/10 rounded-lg">
-                        <Clock size={24} className="text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1 text-primary">Office Hours</h3>
-                      <p className="text-sm text-foreground/80">
-                        Monday - Friday: 9:00 AM - 5:00 PM
-                        <br />
-                        24/7 Crisis Support Available
-                      </p>
-                    </div>
-                  </div>
+                  <h2 className="text-lg font-semibold text-primary mb-3 leading-snug">
+                    We are not yet operational. If you are in need of support now, please explore these great
+                    resources:
+                  </h2>
+                  <ul className="space-y-3 text-sm text-foreground/90 list-none pl-0">
+                    <li>
+                      <span className="text-foreground/70">National Human Trafficking Hotline: </span>
+                      <a
+                        href="tel:18883737888"
+                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
+                      >
+                        1-888-3737-888
+                      </a>
+                    </li>
+                    <li>
+                      <span className="text-foreground/70">Text </span>
+                      <span className="font-medium">&quot;Help&quot;</span>
+                      <span className="text-foreground/70"> or </span>
+                      <span className="font-medium">&quot;Info&quot;</span>
+                      <span className="text-foreground/70"> to </span>
+                      <span className="font-medium">233733</span>
+                    </li>
+                    <li>
+                      <span className="text-foreground/70">Utah Human Trafficking Tip line: </span>
+                      <a
+                        href="tel:8012003443"
+                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
+                      >
+                        801-200-3443
+                      </a>
+                    </li>
+                    <li>
+                      <span className="text-foreground/70">Utah Domestic Violence 24-hr Hotline: </span>
+                      <a
+                        href="tel:18008975465"
+                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
+                      >
+                        1-800-897-5465
+                      </a>
+                    </li>
+                    <li>
+                      <span className="text-foreground/70">Utah Sexual Violence 24-hr Hotline: </span>
+                      <a
+                        href="tel:18884211100"
+                        className="text-primary font-medium underline underline-offset-2 hover:text-primary/80"
+                      >
+                        1-888-421-1100
+                      </a>
+                    </li>
+                  </ul>
                 </CardContent>
               </Card>
             </div>
@@ -133,7 +186,24 @@ export function Contact() {
             <div className="lg:col-span-2">
               <Card className="border-2 border-primary/10">
                 <CardContent className="p-8">
-                  <h2 className="text-3xl font-bold text-primary mb-6">Send Us a Message</h2>
+                  <h2 className="text-3xl font-bold text-primary mb-6">Get in touch</h2>
+
+                  {feedback && (
+                    <Alert
+                      variant={feedback.variant === "destructive" ? "destructive" : "default"}
+                      className={
+                        feedback.variant === "success"
+                          ? "border-green-600/50 bg-green-50 text-green-900 dark:bg-green-950/30 dark:text-green-100"
+                          : undefined
+                      }
+                    >
+                      <AlertTitle>{feedback.variant === "success" ? "Sent" : "Could not send"}</AlertTitle>
+                      <AlertDescription>{feedback.message}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <TurnstileSetupAlert />
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
@@ -215,8 +285,29 @@ export function Contact() {
                       />
                     </div>
 
-                    <Button type="submit" size="lg" className="bg-primary hover:bg-primary/90 w-full md:w-auto">
-                      <Send size={18} className="mr-2" />
+                    {TURNSTILE_SITE_KEY ? (
+                      <div className="flex justify-start">
+                        <Turnstile
+                          ref={turnstileRef}
+                          siteKey={TURNSTILE_SITE_KEY}
+                          onSuccess={handleTurnstileSuccess}
+                          onExpire={handleTurnstileExpire}
+                          options={{ theme: "light" }}
+                        />
+                      </div>
+                    ) : null}
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={isSubmitting || !TURNSTILE_SITE_KEY}
+                      className="bg-primary hover:bg-primary/90 w-full md:w-auto"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 size={18} className="mr-2 animate-spin" />
+                      ) : (
+                        <Send size={18} className="mr-2" />
+                      )}
                       Send Message
                     </Button>
                   </form>
@@ -296,17 +387,20 @@ export function Contact() {
         <div className="container mx-auto px-4">
           <Card className="border-2 border-destructive/30 bg-destructive/5">
             <CardContent className="p-8 text-center">
-              <h2 className="text-3xl font-bold text-destructive mb-4">Need Immediate Help?</h2>
+                  <h2 className="text-3xl font-bold text-destructive mb-4">Need Immediate Help?</h2>
               <p className="text-foreground/80 mb-6 max-w-2xl mx-auto">
-                If you're in crisis or need immediate assistance, please call our 24/7 crisis line.
+                If you&apos;re in crisis or need immediate assistance, please reach out to a trained advocate
+                through one of these national or Utah resources.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-destructive hover:bg-destructive/90">
-                  <Phone className="mr-2" size={20} />
-                  Crisis Line: (801) 555-0200
+                <Button size="lg" className="bg-destructive hover:bg-destructive/90" asChild>
+                  <a href="tel:18883737888">
+                    <Phone className="mr-2" size={20} />
+                    National Human Trafficking Hotline: 1-888-3737-888
+                  </a>
                 </Button>
-                <Button size="lg" variant="outline" className="border-destructive text-destructive hover:bg-destructive hover:text-white">
-                  National Hotline: 1-800-799-7233
+                <Button size="lg" variant="outline" className="border-destructive text-destructive hover:bg-destructive hover:text-white" asChild>
+                  <a href="tel:18008975465">Utah Domestic Violence 24-hr: 1-800-897-5465</a>
                 </Button>
               </div>
             </CardContent>

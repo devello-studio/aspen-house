@@ -1,5 +1,5 @@
 import { ImageWithFallback } from "../figma/ImageWithFallback";
-import { BOARD_IMAGES, PUBLIC_IMAGES } from "../../../constants/publicImages";
+import { BOARD_IMAGES } from "../../../constants/publicImages";
 
 const boardMembers = [
   {
@@ -82,13 +82,6 @@ export function OurBoard() {
       {/* Header Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="flex justify-center mb-8">
-            <img 
-              src={PUBLIC_IMAGES.logo} 
-              alt="Aspen Magdalene House Logo" 
-              className="h-32 w-32 object-contain"
-            />
-          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center text-foreground mb-4">
             Our Board
           </h1>

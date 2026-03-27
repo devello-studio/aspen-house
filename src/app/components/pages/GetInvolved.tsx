@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { Heart, Users, Package, Lightbulb, Loader2 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -196,8 +197,8 @@ export function GetInvolved() {
           </div>
 
           <div className="text-center">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8">
-              Apply to Volunteer
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white px-8">
+              <Link to="/volunteer">Apply to Volunteer</Link>
             </Button>
           </div>
         </div>

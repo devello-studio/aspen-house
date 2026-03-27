@@ -65,9 +65,9 @@ export function Survivors() {
           </h2>
           <div className="flex justify-center mb-12">
             <img
-              src={PUBLIC_IMAGES.logo}
+              src={PUBLIC_IMAGES.aboutThistleBanner}
               alt="Aspen Magdalene House"
-              className="w-full max-w-lg rounded-lg shadow-lg object-cover"
+              className="w-full max-w-4xl rounded-lg shadow-lg object-cover"
             />
           </div>
           <div className="space-y-6 text-foreground/90 leading-relaxed italic text-base md:text-lg border-l-4 border-primary/30 pl-6 md:pl-8">

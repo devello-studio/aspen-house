@@ -10,6 +10,7 @@ import { OurBoard } from "./components/pages/OurBoard";
 import { ThistleFarms } from "./components/pages/ThistleFarms";
 import { SpecialEvents } from "./components/pages/SpecialEvents";
 import { Survivors } from "./components/pages/Survivors";
+import { Volunteer } from "./components/pages/Volunteer";
 import { NotFound } from "./components/pages/NotFound";
 
 export const router = createBrowserRouter([
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: "special-events", Component: SpecialEvents },
       { path: "programs", Component: Programs },
       { path: "get-involved", Component: GetInvolved },
+      { path: "volunteer", Component: Volunteer },
       { path: "contact", Component: Contact },
       { path: "*", Component: NotFound },
     ],

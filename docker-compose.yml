@@ -1,13 +1,30 @@
 name: aspen-house
 
 services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    environment:
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM: ${RESEND_FROM}
+      FORM_NOTIFICATION_EMAIL: ${FORM_NOTIFICATION_EMAIL}
+    expose:
+      - "3000"
+    restart: unless-stopped
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
+      args:
+        VITE_TURNSTILE_SITE_KEY: ${VITE_TURNSTILE_SITE_KEY}
     ports:
       - "8080:80"
+    depends_on:
+      - api
     restart: unless-stopped
 
   dev:
@@ -21,4 +38,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+    environment:
+      API_PROXY_TARGET: http://api:3000
+    depends_on:
+      - api
     restart: unless-stopped
